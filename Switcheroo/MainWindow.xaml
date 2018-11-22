@@ -6,7 +6,7 @@
         Closing="OnClose" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="None" AllowsTransparency="True"
         SizeToContent="WidthAndHeight"
         Title="" MinWidth="542" Deactivated="MainWindow_OnLostFocus" Loaded="MainWindow_OnLoaded"
-        BorderBrush="Transparent" BorderThickness="1"
+        BorderBrush="Transparent" BorderThickness="0"
         Background="Transparent">
 
     <Window.CommandBindings>
@@ -34,7 +34,7 @@
         <local:WindowHandleToCachedIconConverter x:Key="WindowHandleToCachedIconConverter" />
     </Window.Resources>
 
-    <Border Padding="3" Background="White" BorderBrush="DarkGray" BorderThickness="1" Name="Border">
+    <Border Padding="3" Background="#17181C" Opacity="1" BorderBrush="#17181C" BorderThickness="10" Name="Border">
         <DockPanel LastChildFill="True">
             <DockPanel Margin="4,0,4,0" Name="HelpPanel" Background="Transparent" Height="0" DockPanel.Dock="Top">
                 <TextBlock FontSize="10" DockPanel.Dock="Left">
@@ -69,7 +69,7 @@
             </DockPanel>
             <Grid DockPanel.Dock="Top">
                 <TextBox Name="tb" Padding="5" VerticalAlignment="Top" TextChanged="TextChanged" FontSize="15"
-                         VerticalContentAlignment="Center">
+                         VerticalContentAlignment="Center" Opacity="1" Background="#17181C" Foreground="#D9D7D2">
                     <TextBox.InputBindings>
                         <!-- For now, leave these here.  Would it be better to route them upward? -->
                         <KeyBinding Command="local:MainWindow.ScrollListUpCommand" Key="Up" />
@@ -80,9 +80,9 @@
                 </TextBox>
                 <TextBlock Margin="0,0,10,0" Width="15" HorizontalAlignment="Right" TextAlignment="Center"
                            VerticalAlignment="Center"
-                           FontSize="18" FontWeight="Bold" Opacity="0.4"
+                           FontSize="18" FontWeight="Bold" Opacity="1"
                            PreviewMouseDown="ShowHelpTextBlock_OnPreviewMouseDown"
-                           Name="ShowHelpTextBlock" Cursor="Hand" Foreground="DarkGray">
+                           Name="ShowHelpTextBlock" Cursor="Hand" Foreground="#D9D7D2">
                     <TextBlock.Text>?</TextBlock.Text>
                     <TextBlock.Triggers>
                         <EventTrigger RoutedEvent="MouseEnter">
@@ -108,8 +108,8 @@
                     </TextBlock.Triggers>
                 </TextBlock>
             </Grid>
-            <ListBox Name="lb" SelectionMode="Extended" ItemsSource="{Binding}" MinWidth="522" BorderThickness="0"
-                     Margin="-1,3,-1,0" Padding="0" DockPanel.Dock="Bottom">
+            <ListBox Name="lb" SelectionMode="Extended" ItemsSource="{Binding}" MinWidth="522" MaxHeight="600" BorderThickness="0"
+                     Margin="-1,3,-1,0" Padding="0" DockPanel.Dock="Bottom" Foreground="#D9D7D2" Background="#17181C">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -122,7 +122,7 @@
 
                                 <Color x:Key="FadeOutColor">Silver</Color>
                                 <local:BoolToColorConverter x:Key="TitleColorConverter"
-                                                            IfTrue="{StaticResource FadeOutColor}" IfFalse="Black" />
+                                                            IfTrue="{StaticResource FadeOutColor}" IfFalse="#D9D7D2" />
                                 <local:BoolToColorConverter x:Key="ProcessColorConverter"
                                                             IfTrue="{StaticResource FadeOutColor}" IfFalse="Gray" />
 
@@ -207,6 +207,83 @@
                 <ListBox.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}"
                                      Color="{x:Static SystemColors.HighlightColor}" Opacity=".4" />
+                    <!--Style gets from https://sa.ndeep.me/post/apple-style-scrollbar-in-wpf-->
+                    <!--Scrollbar Thumbs-->
+                    <Style x:Key="ScrollThumbs" TargetType="{x:Type Thumb}">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Thumb}">
+                                    <Grid x:Name="Grid">
+                                        <Rectangle HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Fill="Transparent" />
+                                        <Border x:Name="Rectangle1" CornerRadius="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="Auto" Height="Auto" Background="{TemplateBinding Background}" />
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="Tag" Value="Horizontal">
+                                            <Setter TargetName="Rectangle1" Property="Width" Value="Auto" />
+                                            <Setter TargetName="Rectangle1" Property="Height" Value="7" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <!--ScrollBars-->
+                    <Style x:Key="{x:Type ScrollBar}" TargetType="{x:Type ScrollBar}">
+                        <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
+                        <Setter Property="Foreground" Value="#8C8C8C" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Width" Value="8" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                                    <Grid x:Name="GridRoot" Width="8" Background="{TemplateBinding Background}">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="0.00001*" />
+                                        </Grid.RowDefinitions>
+                                        <Track x:Name="PART_Track" Grid.Row="0" IsDirectionReversed="true" Focusable="false">
+                                            <Track.Thumb>
+                                                <Thumb x:Name="Thumb" Background="{TemplateBinding Foreground}" Style="{DynamicResource ScrollThumbs}" />
+                                            </Track.Thumb>
+                                            <Track.IncreaseRepeatButton>
+                                                <RepeatButton x:Name="PageUp" Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="false" />
+                                            </Track.IncreaseRepeatButton>
+                                            <Track.DecreaseRepeatButton>
+                                                <RepeatButton x:Name="PageDown" Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="false" />
+                                            </Track.DecreaseRepeatButton>
+                                        </Track>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger SourceName="Thumb" Property="IsMouseOver" Value="true">
+                                            <Setter Value="{DynamicResource ButtonSelectBrush}" TargetName="Thumb" Property="Background" />
+                                        </Trigger>
+                                        <Trigger SourceName="Thumb" Property="IsDragging" Value="true">
+                                            <Setter Value="{DynamicResource DarkBrush}" TargetName="Thumb" Property="Background" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="false">
+                                            <Setter TargetName="Thumb" Property="Visibility" Value="Collapsed" />
+                                        </Trigger>
+                                        <Trigger Property="Orientation" Value="Horizontal">
+                                            <Setter TargetName="GridRoot" Property="LayoutTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="-90" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter TargetName="PART_Track" Property="LayoutTransform">
+                                                <Setter.Value>
+                                                    <RotateTransform Angle="-90" />
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Setter Property="Width" Value="Auto" />
+                                            <Setter Property="Height" Value="8" />
+                                            <Setter TargetName="Thumb" Property="Tag" Value="Horizontal" />
+                                            <Setter TargetName="PageDown" Property="Command" Value="ScrollBar.PageLeftCommand" />
+                                            <Setter TargetName="PageUp" Property="Command" Value="ScrollBar.PageRightCommand" />
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </ListBox.Resources>
             </ListBox>
         </DockPanel>

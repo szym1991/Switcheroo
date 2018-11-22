@@ -109,6 +109,14 @@ namespace Switcheroo
                     tb.IsEnabled = true;
                     tb.Focus();
                 }
+                else if (args.SystemKey == Key.Down && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+                {
+                    NextItem();
+                }
+                else if (args.SystemKey == Key.Up && Keyboard.Modifiers.HasFlag(ModifierKeys.Alt))
+                {
+                    PreviousItem();
+                }
             };
 
             KeyUp += (sender, args) =>
